@@ -99,7 +99,7 @@ export const getStockCandles = async (
   }
 };
 
-type StockCandle = {
+export type StockCandle = {
   time: Number;
   low: Number;
   high: Number;
