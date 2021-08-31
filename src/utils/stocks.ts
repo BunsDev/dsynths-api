@@ -1,5 +1,6 @@
 // @ts-ignore
 import * as finnhub from 'finnhub';
+import { RateLimiterQueue } from './Queue';
 
 export interface FinnhubData {
   s: string;
@@ -42,12 +43,14 @@ export const intervalMapping: Record<string, string> = {
 
 export const getStockSymbols = async () => {
   try {
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       MISSING_KEY_ERROR && reject(MISSING_KEY_ERROR);
-      finnhubClient.stockSymbols('US', (error: Error, data: FinnhubData) => {
-        if (error) reject(error);
-        resolve(data);
-      });
+      RateLimiterQueue.add(() =>
+        finnhubClient.stockSymbols('US', (error: Error, data: string) => {
+          if (error) reject(error);
+          resolve(data);
+        }),
+      );
     }).catch((err) => {
       throw err;
     });
@@ -66,20 +69,23 @@ export const getStockCandles = async (
 ) => {
   try {
     const interval = intervalMapping[resolution];
-    if (!interval)
+    if (!interval) {
       throw new Error(`Invalid resolution provided: ${resolution}`);
-
+    }
+    
     const data: FinnhubData = await new Promise((resolve, reject) => {
       MISSING_KEY_ERROR && reject(MISSING_KEY_ERROR);
-      finnhubClient.stockCandles(
-        symbol,
-        interval,
-        from,
-        to,
-        (error: Error, data: FinnhubData /* response */) => {
-          if (error) reject(error);
-          resolve(data);
-        },
+      RateLimiterQueue.add(() =>
+        finnhubClient.stockCandles(
+          symbol,
+          interval,
+          from,
+          to,
+          (error: Error, data: FinnhubData) => {
+            if (error) reject(error);
+            resolve(data);
+          },
+        ),
       );
     });
 

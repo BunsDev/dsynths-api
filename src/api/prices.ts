@@ -68,29 +68,27 @@ const pricesHandler = async (
 ) => {
   const fetchStockCandlesAndSendData = async () => {
     console.log('Fetching stock data from FinnHub');
-    const stockCandles = await getStockCandles(
-      symbol as string,
-      resolution as string,
-      from,
-      to,
+    getStockCandles(symbol as string, resolution as string, from, to).then(
+      (stockCandles) => {
+        res.json(stockCandles);
+        redisClient.set(
+          `${symbol}/${timeframe}/lastCandleTimestamp`,
+          stockCandles[stockCandles.length - 1].time.toString(),
+          'EX',
+          resolutionTimestampDelta[resolution],
+        );
+        redisClient.set(
+          `${symbol}/${timeframe}/data`,
+          JSON.stringify(stockCandles),
+          'EX',
+          resolutionTimestampDelta[resolution],
+        );
+        console.log('Redis Cache set:', [
+          `${symbol}/${timeframe}/lastCandleTimestamp`,
+          `${symbol}/${timeframe}/data`,
+        ]);
+      },
     );
-    res.json(stockCandles);
-    redisClient.set(
-      `${symbol}/${timeframe}/lastCandleTimestamp`,
-      stockCandles[stockCandles.length - 1].time.toString(),
-      'EX',
-      resolutionTimestampDelta[resolution],
-    );
-    redisClient.set(
-      `${symbol}/${timeframe}/data`,
-      JSON.stringify(stockCandles),
-      'EX',
-      resolutionTimestampDelta[resolution],
-    );
-    console.log('Redis Cache set:', [
-      `${symbol}/${timeframe}/lastCandleTimestamp`,
-      `${symbol}/${timeframe}/data`,
-    ]);
   };
 
   const { symbol, timeframe } = req.query;
