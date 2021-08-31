@@ -1,6 +1,6 @@
 import Bottleneck from 'bottleneck';
 
-type Job = () => Promise<any>;
+type Job = () => Promise<never>;
 type LimiterConfig = {
   reservoir?: number;
   reservoirRefreshAmount?: number;

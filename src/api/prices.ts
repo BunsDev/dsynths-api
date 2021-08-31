@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import type { RedisClient } from 'redis';
@@ -65,7 +65,7 @@ const pricesHandler = async (
   req: Request,
   res: Response,
   redisClient: RedisClient,
-) => {
+): Promise<void> => {
   const fetchStockCandlesAndSendData = async () => {
     console.log('Fetching stock data from FinnHub');
     getStockCandles(symbol as string, resolution as string, from, to).then(

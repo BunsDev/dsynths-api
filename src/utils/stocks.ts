@@ -1,24 +1,25 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import * as finnhub from 'finnhub';
-import { RateLimiterQueue } from './Queue';
+import * as finnhub from 'finnhub'
+import { RateLimiterQueue } from './Queue'
 
 export interface FinnhubData {
-  s: string;
-  t: Number[];
-  l: Number[];
-  h: Number[];
-  o: Number[];
-  c: Number[];
-  v: Number[];
+  s: string
+  t: number[]
+  l: number[]
+  h: number[]
+  o: number[]
+  c: number[]
+  v: number[]
 }
 
-const API_KEY = process.env.FINNHUB_API_KEY;
+const API_KEY = process.env.FINNHUB_API_KEY
 const MISSING_KEY_ERROR = !API_KEY
   ? 'Finnhub API Key is missing. You can get a free one at: https://finnhub.io/. You can continue without one, but it is recommended to create one regardless'
-  : null;
+  : null
 
-finnhub.ApiClient.instance.authentications['api_key'].apiKey = API_KEY;
-const finnhubClient = new finnhub.DefaultApi();
+finnhub.ApiClient.instance.authentications['api_key'].apiKey = API_KEY
+const finnhubClient = new finnhub.DefaultApi()
 
 // prettier-ignore
 export const intervalMapping: Record<string, string> = {
@@ -41,40 +42,54 @@ export const intervalMapping: Record<string, string> = {
   '1M': 'M',
 };
 
-export const getStockSymbols = async () => {
+interface StockSymbols {
+  currency?: string
+  description?: string
+  displaySymbol?: string
+  figi?: string
+  mic?: string
+  symbol?: string
+  type?: string
+}
+export const getStockSymbols = async (): Promise<
+  StockSymbols[] | StockSymbols
+> => {
   try {
     return await new Promise((resolve, reject) => {
-      MISSING_KEY_ERROR && reject(MISSING_KEY_ERROR);
+      MISSING_KEY_ERROR && reject(MISSING_KEY_ERROR)
       RateLimiterQueue.add(() =>
-        finnhubClient.stockSymbols('US', (error: Error, data: string) => {
-          if (error) reject(error);
-          resolve(data);
-        }),
-      );
+        finnhubClient.stockSymbols(
+          'US',
+          (error: Error, data: StockSymbols | StockSymbols[]) => {
+            if (error) reject(error)
+            resolve(data)
+          },
+        ),
+      )
     }).catch((err) => {
-      throw err;
-    });
+      throw err
+    })
   } catch (err) {
-    console.info('Error fetching stock symbols:');
-    console.error(err);
-    return [];
+    console.info('Error fetching stock symbols:')
+    console.error(err)
   }
-};
+  return []
+}
 
 export const getStockCandles = async (
   symbol: string,
   resolution: string,
   from: number,
   to: number,
-) => {
+): Promise<StockCandle[]> => {
   try {
-    const interval = intervalMapping[resolution];
+    const interval = intervalMapping[resolution]
     if (!interval) {
-      throw new Error(`Invalid resolution provided: ${resolution}`);
+      throw new Error(`Invalid resolution provided: ${resolution}`)
     }
-    
+
     const data: FinnhubData = await new Promise((resolve, reject) => {
-      MISSING_KEY_ERROR && reject(MISSING_KEY_ERROR);
+      MISSING_KEY_ERROR && reject(MISSING_KEY_ERROR)
       RateLimiterQueue.add(() =>
         finnhubClient.stockCandles(
           symbol,
@@ -82,41 +97,41 @@ export const getStockCandles = async (
           from,
           to,
           (error: Error, data: FinnhubData) => {
-            if (error) reject(error);
-            resolve(data);
+            if (error) reject(error)
+            resolve(data)
           },
         ),
-      );
-    });
+      )
+    })
 
     if (data.s === 'no_data' || data.s !== 'ok') {
       console.info(
         '[data] has returned 0 values for the requested range, this is either a bug or the requested dataset is out of range:',
-      );
-      console.info(data);
-      return [];
+      )
+      console.info(data)
+      return []
     }
 
-    return reduceDataResponse(data, from, to);
+    return reduceDataResponse(data, from, to)
   } catch (err) {
-    console.info('Error fetching stock candles:');
-    console.error(err);
-    return [];
+    console.info('Error fetching stock candles:')
+    console.error(err)
+    return []
   }
-};
+}
 
-export type StockCandle = {
-  time: Number;
-  low: Number;
-  high: Number;
-  open: Number;
-  close: Number;
-  volume: Number;
-};
-const reduceDataResponse = (data: FinnhubData, from: Number, to: Number) => {
+export interface StockCandle {
+  time: number
+  low: number
+  high: number
+  open: number
+  close: number
+  volume: number
+}
+const reduceDataResponse = (data: FinnhubData, from: number, to: number) => {
   try {
     return data.t.reduce((acc: StockCandle[], bar: number, index) => {
-      if (bar <= from && bar > to) return acc;
+      if (bar <= from && bar > to) return acc
       const obj: StockCandle = {
         time: bar * 1000,
         low: data.l[index],
@@ -124,13 +139,13 @@ const reduceDataResponse = (data: FinnhubData, from: Number, to: Number) => {
         open: data.o[index],
         close: data.c[index],
         volume: data.v[index],
-      };
-      acc.push(obj);
-      return acc;
-    }, []);
+      }
+      acc.push(obj)
+      return acc
+    }, [])
   } catch (err) {
-    console.info('Error reducing data response: ');
-    console.error(err);
-    return [];
+    console.info('Error reducing data response: ')
+    console.error(err)
+    return []
   }
-};
+}

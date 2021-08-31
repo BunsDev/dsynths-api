@@ -6,12 +6,14 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc & node .",
-    "dev": "tsc -w & nodemon ."
+    "dev": "tsc -w & nodemon .",
+    "lint": "./node_modules/.bin/eslint . --ext .ts --ignore-pattern node_modules/"
   },
   "repository": "https://github.com/dsynths/dsynths-api.git",
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "bottleneck": "^2.19.5",
     "cors": "^2.8.5",
     "dayjs": "^1.10.6",
     "dotenv": "^10.0.0",
