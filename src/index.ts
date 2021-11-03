@@ -6,9 +6,9 @@ import cors from 'cors'
 import redis from 'redis'
 
 // controllers
-import pricesHandler from './api/prices'
+import pricesHandler from './api/prices.js'
 
-const BACKEND_PORT = 5000
+const BACKEND_PORT = 4000
 const app = express()
 const redisClient = redis.createClient()
 

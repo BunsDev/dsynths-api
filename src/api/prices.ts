@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
+import utc from 'dayjs/plugin/utc.js';
 import type { RedisClient } from 'redis';
 
-import { getStockCandles, StockCandle } from '../utils/stocks';
+import { getStockCandles, StockCandle } from '../utils/stocks.js';
 
 dayjs.extend(utc);
 type Resolution = '15' | '60' | 'D';
@@ -67,41 +67,40 @@ const pricesHandler = async (
   redisClient: RedisClient,
 ): Promise<void> => {
   const fetchStockCandlesAndSendData = async () => {
-    console.log('Fetching stock data from FinnHub');
-    getStockCandles(symbol as string, resolution as string, from, to).then(
+    getStockCandles(symbol as string, resolution as string, from, to, assetType as string).then(
       (stockCandles) => {
         res.json(stockCandles);
         redisClient.set(
-          `${symbol}/${timeframe}/lastCandleTimestamp`,
+          `${assetType}/${symbol}/${timeframe}/lastCandleTimestamp`,
           stockCandles[stockCandles.length - 1].time.toString(),
           'EX',
           resolutionTimestampDelta[resolution],
         );
         redisClient.set(
-          `${symbol}/${timeframe}/data`,
+          `${assetType}/${symbol}/${timeframe}/data`,
           JSON.stringify(stockCandles),
           'EX',
           resolutionTimestampDelta[resolution],
         );
         console.log('Redis Cache set:', [
-          `${symbol}/${timeframe}/lastCandleTimestamp`,
-          `${symbol}/${timeframe}/data`,
+          `${assetType}/${symbol}/${timeframe}/lastCandleTimestamp`,
+          `${assetType}/${symbol}/${timeframe}/data`,
         ]);
       },
     );
   };
 
-  const { symbol, timeframe } = req.query;
+  const { assetType, symbol, timeframe } = req.query;
   const { to, from, resolution } = getParams(timeframe as string);
   // check the cache if we have valid data for the period
   redisClient.get(
-    `${symbol}/${timeframe}/lastCandleTimestamp`,
+    `${assetType}/${symbol}/${timeframe}/lastCandleTimestamp`,
     (err, lastCandleTimestampData) => {
       if (!err) {
         const lastCandleTimestamp = parseInt(lastCandleTimestampData) / 1000;
         const offsetTime = to + resolutionTimestampDelta[resolution];
         if (lastCandleTimestamp < offsetTime) {
-          redisClient.get(`${symbol}/${timeframe}/data`, (err, data) => {
+          redisClient.get(`${assetType}/${symbol}/${timeframe}/data`, (err, data) => {
             if (!err) {
               console.log('Cached data found');
               const cachedData: StockCandle[] = JSON.parse(data);
