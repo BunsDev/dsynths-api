@@ -181,7 +181,6 @@ const getCoinGeckoData = async (symbol: string, from: number, to: number) => {
     )}`,
   )
   const candlesJson = await candlesData.json()
-  console.log(candlesJson)
   return candlesJson as CoinGeckoData
 }
 
