@@ -2,17 +2,22 @@
   "name": "dsynths-api",
   "version": "1.0.0",
   "description": "Private API Server for the dSynths App",
-  "main": "build/index",
+  "main": "dist/index.js",
   "scripts": {
-    "prebuild": "rimraf ./build",
-    "build": "tsc",
-    "start": "node ./dist/index.js",
+    "start": "node dist/index.js",
     "dev": "nodemon --exec ts-node ./src/index.ts --watch src --ext .ts",
+    "postinstall": "tsc",
+    "watch-node": "nodemon dist/index.js",
+    "watch-ts": "tsc -w",
+    "deploy": "git add . && git commit -m Heroku && git push heroku master",
     "lint": "./node_modules/.bin/eslint . --ext .ts"
   },
   "repository": "https://github.com/dsynths/dsynths-api.git",
   "license": "MIT",
   "private": true,
+  "engines": {
+    "node": "16.13.1"
+  },
   "dependencies": {
     "@stoqey/finnhub": "^0.3.4",
     "async-redis": "^2.0.0",
