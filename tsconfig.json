@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
+    "rootDir": "./src",
+    "outDir": "./dist",
     "paths": {
       "*": ["./node_modules/*"]
     },
@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

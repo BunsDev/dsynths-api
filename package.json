@@ -4,11 +4,12 @@
   "description": "Private API Server for the dSynths App",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "build-ts": "tsc",
+    "postinstall": "npm run build-ts",
+    "serve": "node dist/index.js",
+    "start": "npm run serve",
     "dev": "nodemon --exec ts-node ./src/index.ts --watch src --ext .ts",
-    "postinstall": "tsc",
-    "watch-node": "nodemon dist/index.js",
-    "watch-ts": "tsc -w",
+    "build": "tsc",
     "lint": "./node_modules/.bin/eslint . --ext .ts"
   },
   "repository": "https://github.com/dsynths/dsynths-api.git",
