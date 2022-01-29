@@ -1,31 +1,34 @@
 {
   "name": "dsynths-api",
-  "type": "module",
   "version": "1.0.0",
-  "description": "Private API Server for dSynths app",
-  "main": "dist/index.js",
+  "description": "Private API Server for the dSynths App",
+  "main": "build/index",
   "scripts": {
+    "prebuild": "rimraf ./build",
     "build": "tsc",
-    "start": "tsc & node .",
-    "dev": "tsc -w & nodemon .",
-    "lint": "./node_modules/.bin/eslint . --ext .ts --ignore-pattern node_modules/"
+    "start": "node ./dist/index.js",
+    "dev": "nodemon --exec ts-node ./src/index.ts --watch src --ext .ts",
+    "lint": "./node_modules/.bin/eslint . --ext .ts"
   },
   "repository": "https://github.com/dsynths/dsynths-api.git",
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@stoqey/finnhub": "^0.3.4",
+    "async-redis": "^2.0.0",
     "bottleneck": "^2.19.5",
     "cors": "^2.8.5",
     "dayjs": "^1.10.6",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "finnhub": "^1.2.6",
-    "node-fetch": "^3.0.0",
-    "redis": "^3.1.2"
+    "helmet": "^5.0.2",
+    "node-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
+    "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
+    "@types/helmet": "^4.0.0",
     "@types/node": "^16.7.1",
     "@types/redis": "^2.8.31",
     "@typescript-eslint/eslint-plugin": "^4.29.3",
@@ -33,8 +36,10 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.1",
-    "nodemon": "^2.0.12",
+    "gulp": "^4.0.2",
+    "nodemon": "^2.0.15",
     "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
     "typescript": "^4.3.5"
   }
 }

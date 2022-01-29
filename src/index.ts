@@ -1,30 +1,37 @@
-import dotenv from 'dotenv'
-dotenv.config()
-
 import express from 'express'
 import cors from 'cors'
-import redis from 'redis'
+import dotenv from 'dotenv'
+import helmet from 'helmet'
 
-// controllers
-import pricesHandler from './api/prices.js'
+import { stocksRouter } from './stocks/router'
+import { errorHandler } from './middleware/error'
+import { notFoundHandler } from './middleware/not-found'
 
-const BACKEND_PORT = 4000
+dotenv.config()
+
+if (!process.env.PORT) {
+  console.error('PORT must be a defined environment variable')
+  process.exit(1)
+}
+
+if (!process.env.FINNHUB_API_KEY) {
+  console.error('FINNHUB_API_KEY must be a defined environment variable')
+  process.exit(1)
+}
+
+const PORT: number = parseInt(process.env.PORT as string, 10)
 const app = express()
-const redisClient = redis.createClient()
+app.listen(PORT, () => console.log(`Running on port ${PORT}`))
 
-const origin = [...(process.env.CORS_URLS || '*').split(',')]
+app.use(helmet())
 app.use(
   cors({
-    origin,
-    // for now we don't want other methods but make sure to place only those which we only intend to use from client
-    methods: ['GET' /* ,'POST','DELETE','UPDATE','PUT','PATCH' */],
-  }),
+    origin: [...(process.env.CORS_WHITELIST || '*').split(',')],
+    methods: ['GET'],
+  })
 )
+app.use(express.json())
 
-app.get('/', (_, res) => {
-  res.status(200).send({ hello: 'world' })
-})
-
-app.get('/prices', (req, res) => pricesHandler(req, res, redisClient))
-
-app.listen(BACKEND_PORT, () => console.log(`Running on port ${BACKEND_PORT}`))
+app.use('/stocks', stocksRouter)
+app.use(errorHandler)
+app.use(notFoundHandler)
