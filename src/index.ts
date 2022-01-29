@@ -24,12 +24,22 @@ const app = express()
 app.listen(PORT, () => console.log(`Running on port ${PORT}`))
 
 app.use(helmet())
-app.use(
-  cors({
-    origin: [...(process.env.CORS_WHITELIST || '*').split(',')],
-    methods: ['GET'],
-  })
-)
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(
+    cors({
+      origin: function (origin, callback) {
+        if (!origin || [...(process.env.CORS_WHITELIST || '*').split(',')].indexOf(origin) !== -1) {
+          callback(null, true)
+        } else {
+          callback(new Error('Not allowed by CORS'))
+        }
+      },
+      methods: ['GET'],
+    })
+  )
+}
+
 app.use(express.json())
 
 app.use('/stocks', stocksRouter)

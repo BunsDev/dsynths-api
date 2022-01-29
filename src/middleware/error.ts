@@ -6,6 +6,6 @@ export const errorHandler = (error: HttpException, request: Request, response: R
 
   response.status(status).json({
     success: false,
-    message: error,
+    message: error.message,
   })
 }
