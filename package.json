@@ -9,7 +9,6 @@
     "postinstall": "tsc",
     "watch-node": "nodemon dist/index.js",
     "watch-ts": "tsc -w",
-    "deploy": "git add . && git commit -m Heroku && git push heroku master",
     "lint": "./node_modules/.bin/eslint . --ext .ts"
   },
   "repository": "https://github.com/dsynths/dsynths-api.git",
