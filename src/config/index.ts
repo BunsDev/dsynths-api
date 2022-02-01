@@ -1,4 +1,6 @@
 export const CORS_WHITELIST = [
+  'http://localhost:3000',
+
   // Client production with www
   'https://www.dsynths.com',
   'http://www.dsynths.com',

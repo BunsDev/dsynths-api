@@ -26,27 +26,19 @@ app.listen(PORT, () => console.log(`Running on port ${PORT}`))
 
 app.use(helmet())
 
-if (process.env.NODE_ENV === 'production') {
-  // app.use(
-  //   cors({
-  //     origin: function (origin, callback) {
-  //       if (!origin || CORS_WHITELIST.indexOf(origin) !== -1) {
-  //         callback(null, true)
-  //       } else {
-  //         callback(new Error('Not allowed by CORS'))
-  //       }
-  //     },
-  //     optionsSuccessStatus: 200, // some legacy browsers (IE11) choke on 204
-  //     methods: ['GET'],
-  //   })
-  // )
-  app.use(
-    cors({
-      origin: '*',
-      optionsSuccessStatus: 200,
-    })
-  )
-}
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || CORS_WHITELIST.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    optionsSuccessStatus: 200, // some legacy browsers (IE11) choke on 204
+    methods: ['GET'],
+  })
+)
 
 app.use(express.json())
 
