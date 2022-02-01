@@ -40,6 +40,12 @@ if (process.env.NODE_ENV === 'production') {
   //     methods: ['GET'],
   //   })
   // )
+  app.use(
+    cors({
+      origin: '*',
+      optionsSuccessStatus: 200,
+    })
+  )
 }
 
 app.use(express.json())
