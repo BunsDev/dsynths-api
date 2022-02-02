@@ -19,8 +19,8 @@
     "node": "16.13.1"
   },
   "dependencies": {
-    "@stoqey/finnhub": "^0.3.4",
     "async-redis": "^2.0.0",
+    "axios": "^0.25.0",
     "bottleneck": "^2.19.5",
     "cors": "^2.8.5",
     "dayjs": "^1.10.6",

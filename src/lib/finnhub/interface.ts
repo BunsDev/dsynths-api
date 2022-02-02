@@ -1,19 +1,13 @@
-import type { Resolution as OriginalResolution } from '@stoqey/finnhub'
-export type Resolution = Exclude<OriginalResolution, 'M'> // M causes issues with timestamp delta's
+export type Resolution = '1' | '5' | '15' | '30' | '60' | 'D' | 'W'
 
-/**
- * Range in time in which the candlesticks are active.
- */
-export type Period = 'd' | 'w' | 'm' | 'y'
-
-export interface Range {
-  from: number
-  to: number
-}
-
-export interface Price {
-  price: number
-  timestamp: number
+export interface FinnhubCandles {
+  c: number[]
+  h: number[]
+  l: number[]
+  o: number[]
+  s: string
+  t: number[]
+  v: number[]
 }
 
 /**

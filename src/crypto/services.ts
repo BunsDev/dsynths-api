@@ -7,7 +7,7 @@ export const fetchCandlesticks = async (
   resolution: Resolution
 ): Promise<Candlestick[]> => {
   try {
-    return await Client.getStockCandles(ticker, from, to, resolution)
+    return await Client.getCryptoCandles(ticker, from, to, resolution)
   } catch (err) {
     throw err
   }

@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express'
 
-import * as StockController from './controllers'
+import * as CryptoController from './controllers'
 import { isPeriod, isResolution } from './helpers'
 import { Candlestick } from '../lib/finnhub'
 
-export const stocksRouter = express.Router()
+export const cryptoRouter = express.Router()
 
-stocksRouter.get('/ohlc', async (req: Request, res: Response) => {
+cryptoRouter.get('/ohlc', async (req: Request, res: Response) => {
   try {
     const { ticker, period, resolution } = req.query
     if (typeof ticker !== 'string') {
@@ -19,7 +19,7 @@ stocksRouter.get('/ohlc', async (req: Request, res: Response) => {
       throw new Error(`Query param 'resolution' is not a supported resolution: ${resolution}`)
     }
 
-    const candlesticks: Candlestick[] = await StockController.getCandlesticks(ticker, period, resolution)
+    const candlesticks: Candlestick[] = await CryptoController.getCandlesticks(ticker, period, resolution)
     if (candlesticks) {
       return res.status(200).json({
         success: true,

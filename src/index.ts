@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import helmet from 'helmet'
 
+import { cryptoRouter } from './crypto/router'
 import { stocksRouter } from './stocks/router'
 import { errorHandler } from './middleware/error'
 import { notFoundHandler } from './middleware/not-found'
@@ -12,11 +13,6 @@ dotenv.config()
 
 if (!process.env.PORT) {
   console.error('PORT must be a defined environment variable')
-  process.exit(1)
-}
-
-if (!process.env.FINNHUB_API_KEY) {
-  console.error('FINNHUB_API_KEY must be a defined environment variable')
   process.exit(1)
 }
 
@@ -43,5 +39,6 @@ app.use(
 app.use(express.json())
 
 app.use('/stocks', stocksRouter)
+app.use('/crypto', cryptoRouter)
 app.use(errorHandler)
 app.use(notFoundHandler)
