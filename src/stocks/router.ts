@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express'
 
 import * as StockController from './controllers'
 import { isPeriod, isResolution } from './helpers'
-import { Candlestick } from '../lib/finnhub'
+import { Candlestick, Quote } from '../lib/finnhub'
 
 export const stocksRouter = express.Router()
 
@@ -29,6 +29,32 @@ stocksRouter.get('/ohlc', async (req: Request, res: Response) => {
     res.status(404).json({
       success: false,
       message: 'No candlesticks found',
+    })
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    })
+  }
+})
+
+stocksRouter.get('/quote', async (req: Request, res: Response) => {
+  try {
+    const { ticker } = req.query
+    if (typeof ticker !== 'string') {
+      throw new Error(`Query param 'ticker' has to be of type string: ${ticker}`)
+    }
+
+    const quote: Quote | null = await StockController.getQuote(ticker)
+    if (quote) {
+      return res.status(200).json({
+        success: true,
+        data: quote,
+      })
+    }
+    res.status(404).json({
+      success: false,
+      message: 'No quote found',
     })
   } catch (err: any) {
     res.status(500).json({

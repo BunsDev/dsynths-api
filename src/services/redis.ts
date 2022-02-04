@@ -13,7 +13,10 @@ let config =
     : null
 
 const client = redis.createClient(config)
-client.config('SET', 'appendOnly', 'yes')
+
+if (process.env.NODE_ENV === 'production') {
+  client.config('SET', 'appendOnly', 'yes')
+}
 
 client.on('error', (error: Error) => {
   console.error('Redis error encountered: ', error)

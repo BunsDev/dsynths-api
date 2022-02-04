@@ -20,3 +20,4 @@ export const CORS_WHITELIST = [
 
 export const CACHE_EXPIRE_STOCKS_SEC = 10 * 60
 export const CACHE_EXPIRE_CRYPTO_SEC = 60
+export const CACHE_EXPIRE_QUOTE_SEC = 60

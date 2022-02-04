@@ -7,8 +7,3 @@ export interface Range {
   from: number
   to: number
 }
-
-export interface Price {
-  price: number
-  timestamp: number
-}

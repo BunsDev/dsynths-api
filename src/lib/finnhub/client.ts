@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 
-import { Candlestick, FinnhubCandles, Resolution } from './interface'
+import { Candlestick, FinnhubCandles, Resolution, FinnhubQuote, Quote } from './interface'
 import Queue from './queue'
 import { FINNHUB_API_KEY } from './config'
 
@@ -152,6 +152,46 @@ export class FinnhubAPI {
     } catch (error: any) {
       console.error('An error occured while fetching candles', error)
       return []
+    }
+  }
+
+  /**
+   * Get real-time quote data for US stocks.
+   * @param symbol
+   * https://finnhub.io/docs/api#quote
+   */
+  public async getStockQuote(symbol: string): Promise<Quote | null> {
+    //  const url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`
+    const params = {
+      symbol,
+      token: this.token,
+    }
+
+    try {
+      const data: FinnhubQuote = await Queue.add(async () => {
+        const response = await this.api.get(`quote`, {
+          method: 'GET',
+          params,
+        })
+        return await response.data
+      })
+
+      if (Object.values(data).includes(null)) {
+        return null
+      }
+
+      return {
+        timestamp: data.t,
+        open: data.o,
+        high: data.h,
+        low: data.l,
+        close: data.pc,
+        current: data.c,
+        change: data.dp,
+      } as Quote
+    } catch (error) {
+      console.error('An error occured while fetching a quote: ', error)
+      return null
     }
   }
 }
