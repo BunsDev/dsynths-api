@@ -17,3 +17,6 @@ export const CORS_WHITELIST = [
   'https://staging.dsynths.com',
   'http://staging.dsynths.com',
 ]
+
+export const CACHE_EXPIRE_STOCKS_SEC = 10 * 60
+export const CACHE_EXPIRE_CRYPTO_SEC = 60
