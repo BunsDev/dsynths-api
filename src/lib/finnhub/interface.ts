@@ -11,7 +11,7 @@ export interface FinnhubCandles {
 }
 
 /**
- * @param timestamp UNIX timestamp at candlestick close, MS
+ * @param timestamp UNIX timestamp at candlestick open, in seconds
  * @param low lowest price in resolution
  * @param high highest price in resolution
  * @param open open price

@@ -92,7 +92,7 @@ export class FinnhubAPI {
   }
 
   /**
-   * Get candlestick data for stocks.
+   * Get candlestick data for crypto.
    * @param symbol
    * @param from
    * @param to
